@@ -34,7 +34,7 @@ const RelatedWorks: React.FC<RelatedWorksProps> = ({ conceptId, isVisible }) => 
       setError(null);
       try {
         // Use `subjects` as the query parameter for the API proxy
-        const response = await fetch(`/api/wellcome/works?subjects=${conceptId}`);
+        const response = await fetch(`https://api.wellcomecollection.org/catalogue/v2/works?subjects=${conceptId}`);
         if (!response.ok) {
           throw new Error(`Failed to fetch works: ${response.status}`);
         }
