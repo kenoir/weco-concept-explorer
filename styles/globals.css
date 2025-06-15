@@ -1,7 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+/* Remove Tailwind directives */
 :root {
   --background: #ffffff;
   --foreground: #171717;
