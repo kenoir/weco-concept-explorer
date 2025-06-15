@@ -36,6 +36,14 @@ This project uses GitHub Actions for CI/CD.
 
 **Note:** Replace `kenoir` with the actual GitHub username or organization name where this repository is hosted.
 
+## Live Site
+
+The application is deployed via GitHub Pages and is available at:
+
+[https://kenoir.github.io/weco-concept-explorer/](https://kenoir.github.io/weco-concept-explorer/)
+
+The `gh-pages` branch, where the static files are deployed, is automatically created and managed by the CI/CD workflow.
+
 ---
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
