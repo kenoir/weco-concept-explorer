@@ -7,10 +7,15 @@ on:
   workflow_dispatch: # Allow manual triggering
 
 jobs:
-  build-and-deploy:
+  build-and-deploy: # Job name can be kept or changed
     runs-on: ubuntu-latest
     permissions:
-      contents: write # To push to gh-pages
+      contents: read # Changed from write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,11 +31,13 @@ jobs:
       - name: Build Next.js app
         run: npm run build
         env:
-          NEXT_PUBLIC_BASE_PATH: /weco-concept-explorer # Pass base path as env var if needed by your app
+          NEXT_PUBLIC_BASE_PATH: /weco-concept-explorer # Pass base path as env var
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./out
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out
-          # cname: your-custom-domain.com # Optional: if you have a custom domain
+        id: deployment # id is important for accessing the output URL
+        uses: actions/deploy-pages@v4
