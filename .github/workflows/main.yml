@@ -27,8 +27,6 @@ jobs:
         run: npm ci
       - name: Build Next.js app
         run: npm run build
-        env:
-          NEXT_PUBLIC_BASE_PATH: /weco-concept-explorer
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
