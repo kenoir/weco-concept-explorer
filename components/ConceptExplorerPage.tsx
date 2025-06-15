@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Head from "next/head";
+import { Input, Button, Spinner, Alert, Text } from "@rewind-ui/core";
 import ConceptInfo from "./ConceptInfo";
 import ConceptGraph from "./ConceptGraph";
 import RelatedWorks from "./RelatedWorks";
@@ -109,69 +110,53 @@ const ConceptExplorerPage: React.FC = () => {
               Enter a Concept ID or click on the graph to explore.
             </p>
           </div>
-          <div className="flex-shrink-0 flex items-center gap-2 w-full md:w-auto">
-            <input
-              type="text"
+          {/* Search input and button moved here */}
+          <div className="flex-shrink-0 flex items-center gap-2 w-full md:w-auto mt-4 md:mt-0">
+            <Input
               id="conceptIdInput"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleExploreClick()}
-              className="flex-grow w-full min-w-0 px-3 py-1.5 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="e.g., avkn7rq3"
+              className="flex-grow w-full min-w-0" // Adjusted styling
+              // size="sm" // Example: Adjust size if needed
             />
-            <button
+            <Button
               id="fetchConceptBtn"
               onClick={handleExploreClick}
               disabled={isLoading}
-              className="bg-blue-600 text-white font-semibold px-4 py-1.5 text-sm rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors disabled:opacity-50"
+              // color="blue" // Example: Adjust color if needed
+              // size="sm" // Example: Adjust size if needed
+              className="font-semibold" // Adjusted styling
             >
               {isLoading && !showResults ? "Exploring..." : "Explore"}
-            </button>
+            </Button>
           </div>
         </header>
 
         {isLoading && !showResults && ( // Show main loading indicator only if no results are shown yet
-          <div id="loading" className="text-center my-8">
-            <svg
-              className="animate-spin h-6 w-6 text-blue-600 mx-auto"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            <p className="mt-2 text-sm text-gray-600">
+          <div id="loading" className="text-center my-8 flex flex-col items-center justify-center">
+            <Spinner size="lg" color="gray" />
+            <Text className="mt-2 text-sm text-gray-600">
               Fetching concept data...
-            </p>
+            </Text>
           </div>
         )}
 
         {error && !showResults && ( // Show main error only if no results are shown
-             <div id="error" className="text-center my-8 p-4 bg-red-100 text-red-700 rounded-lg text-sm">
-                {error}
-             </div>
+          <Alert variant="danger" title="Error" id="error" className="my-8 text-sm">
+            {error}
+          </Alert>
         )}
 
         {/* Results Container - Conditionally rendered or managed internally by components */}
         {/* The `showResults` state ensures this section appears once an initial successful fetch happens */}
         {/* Individual components like ConceptGraph will have their own internal loading for subsequent updates */}
         <main id="results-container"
-              className={`grid grid-cols-1 lg:grid-cols-5 gap-4 ${showResults ? "opacity-100" : "opacity-0 h-0 overflow-hidden"} transition-opacity duration-300 ease-in-out`}
+              className={`grid grid-cols-1 lg:grid-cols-3 gap-4 ${showResults ? "opacity-100" : "opacity-0 h-0 overflow-hidden"} transition-opacity duration-300 ease-in-out`}
         >
           {/* Left Column: Info and Graph */}
-          <div className="lg:col-span-3 flex flex-col gap-4">
+          <div className="lg:col-span-2 flex flex-col gap-4">
             {/* ConceptInfo will show its skeleton if rootConceptData is null but showResults is true (e.g. during graph click loading) */}
             <ConceptInfo concept={rootConceptData} />
             <ConceptGraph
@@ -183,7 +168,9 @@ const ConceptExplorerPage: React.FC = () => {
 
           {/* Right Column: Related Works */}
           {/* RelatedWorks visibility is controlled by currentConceptId and its own internal loading state */}
-          <RelatedWorks conceptId={currentConceptId} isVisible={showResults && !!currentConceptId} />
+          <div className="lg:col-span-1">
+            <RelatedWorks conceptId={currentConceptId} isVisible={showResults && !!currentConceptId} />
+          </div>
         </main>
       </div>
     </>
