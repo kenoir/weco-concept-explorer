@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   basePath: "/weco-concept-explorer",
   trailingSlash: true,
   reactStrictMode: true,
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;
