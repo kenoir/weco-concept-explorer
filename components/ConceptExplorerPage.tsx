@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { useRouter } from "next/router";
-import Head from "next/head";
 import ConceptInfo from "./ConceptInfo";
 import ConceptGraph from "./ConceptGraph";
 import RelatedWorks from "./RelatedWorks";
@@ -92,12 +91,7 @@ const ConceptExplorerPage: React.FC = () => {
 
   return (
     <div style={styles.container}>
-      <Head>
-        <title>Wellcome Collection Concept Explorer</title>
-        <meta name="description" content="Explore concepts from the Wellcome Collection" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      </Head>
-      <h1 style={styles.h1}>Wellcome Collection Concept Explorer</h1>
+      {/* Removed H1 title */}
       {error && (
         <div style={{ ...styles.card, ...styles.error }}>
           <strong>Error:</strong> {error}
