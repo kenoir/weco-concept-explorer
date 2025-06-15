@@ -11,7 +11,7 @@ const styles = {
     maxWidth: '100vw',
     width: '100vw',
     margin: 0,
-    padding: '2em',
+    padding: 0, // Remove extra padding
     fontFamily: 'Arial, Helvetica, sans-serif',
     background: '#f7f7fa',
     color: '#222',
@@ -30,8 +30,8 @@ const styles = {
     background: '#fff',
     borderRadius: 16,
     boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-    padding: '2em',
-    marginBottom: '2em',
+    padding: 0, // Remove extra padding
+    marginBottom: 0, // Remove extra margin
   },
   error: {
     background: '#ffeaea',
@@ -90,29 +90,36 @@ const ConceptExplorerPage: React.FC = () => {
   }, [router]);
 
   return (
-    <div style={styles.container}>
-      {/* Removed H1 title */}
+    <>
       {error && (
-        <div style={{ ...styles.card, ...styles.error }}>
-          <strong>Error:</strong> {error}
+        <div style={styles.container}>
+          <div style={{ ...styles.card, ...styles.error }}>
+            <strong>Error:</strong> {error}
+          </div>
         </div>
       )}
       {rootConceptData && (
-        <div style={styles.card}>
-          <ConceptInfo concept={rootConceptData} />
+        <div style={styles.container}>
+          <div style={styles.card}>
+            <ConceptInfo concept={rootConceptData} />
+          </div>
         </div>
       )}
-      <div style={styles.card}>
-        <ConceptGraph
-          rootConcept={rootConceptData}
-          onNodeClick={handleNodeClick}
-          currentConceptId={currentConceptId}
-        />
+      <div style={styles.container}>
+        <div style={styles.card}>
+          <ConceptGraph
+            rootConcept={rootConceptData}
+            onNodeClick={handleNodeClick}
+            currentConceptId={currentConceptId}
+          />
+        </div>
       </div>
-      <div style={{ ...styles.card, marginTop: 24 }}>
-        <RelatedWorks conceptId={currentConceptId} isVisible={!!currentConceptId} />
+      <div style={styles.container}>
+        <div style={{ ...styles.card, marginTop: 24 }}>
+          <RelatedWorks conceptId={currentConceptId} isVisible={!!currentConceptId} />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
