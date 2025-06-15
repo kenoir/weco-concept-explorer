@@ -24,6 +24,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-size: 14px;
+  font-family: var(--font-inter), 'Inter', 'Geist', 'Geist Sans', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
