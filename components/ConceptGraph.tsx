@@ -29,18 +29,17 @@ interface ConceptGraphProps {
   currentConceptId: string | null;
 }
 
-// Helper: Get related concepts from a concept object (similar to SPA)
 function getRelatedConcepts(concept: any): Array<{ id: string, label: string, type: string }> {
   const relations: Array<{ id: string, label: string, type: string }> = [];
-  if (!concept || !concept.relatedConcepts) return relations;
-  // The structure of relatedConcepts can vary, ensure it\'s handled robustly
-  // This assumes relatedConcepts is an object where each value is an array of concepts
-  Object.values(concept.relatedConcepts).forEach((group: any) => {
+  if (!concept || !concept.relatedConcepts) return relations; // Check if root concept or its relatedConcepts field is missing
+
+  Object.values(concept.relatedConcepts).forEach((group: any) => { // Iterate over arrays like 'broaderThan', 'relatedTo', 'relatedTopics'
     if (Array.isArray(group)) {
       group.forEach(related => {
-        // Ensure the related concept has an ID and a label to be useful
-        if (related && related.id && related.label && related.type) {
-          relations.push({ id: related.id, label: related.label, type: related.type });
+        // Use related.conceptType for the 'type' field.
+        // Ensure the stub has an id, a label, and a conceptType to be useful.
+        if (related && related.id && related.label && related.conceptType) {
+          relations.push({ id: related.id, label: related.label, type: related.conceptType });
         }
       });
     }
