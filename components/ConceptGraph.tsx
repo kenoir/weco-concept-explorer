@@ -83,75 +83,60 @@ const ConceptGraph: React.FC<ConceptGraphProps> = ({ rootConcept, onNodeClick, c
     const buildGraphData = async (initialRootConcept: any): Promise<GraphData> => {
       const nodesMap = new Map<string, ConceptNode>();
       const links: ConceptLink[] = [];
-      const queue: Array<{ conceptId: string; depth: number, parentConcept?: any }> = [{ conceptId: initialRootConcept.id, depth: 0, parentConcept: initialRootConcept }];
+      const queue: Array<{ concept: any; depth: number }> = [];
 
-      let head = 0;
-
-      // Ensure the root concept is added to the map first
-      // If the initialRootConcept is already detailed, use its properties
       nodesMap.set(initialRootConcept.id, {
         id: initialRootConcept.id,
         label: initialRootConcept.label,
         type: initialRootConcept.type,
         depth: 0,
         isRoot: true,
-        originalConcept: initialRootConcept
+        originalConcept: initialRootConcept,
       });
+      queue.push({ concept: initialRootConcept, depth: 0 });
 
-      while(head < queue.length) {
-        const item = queue[head++];
-        if (!item) continue; // Should not happen with proper queue management
+      let head = 0;
+      while (head < queue.length) {
+        const queueItem = queue[head++];
+        if (!queueItem) continue;
+        const { concept: currentConceptData, depth } = queueItem;
 
-        const { conceptId, depth, parentConcept: currentParentConceptData } = item;
-
-        // Fetch full concept data if we only have an ID or if it\'s the root and we want to ensure it is fully populated
-        let currentConceptData = nodesMap.get(conceptId)?.originalConcept;
-        if (!currentConceptData || (depth === 0 && !currentConceptData.relatedConcepts)) {
-             const fetchedData = await fetchConceptById(conceptId);
-             if (fetchedData) {
-                 currentConceptData = fetchedData;
-                 // Update node in map with full data
-                 const existingNode = nodesMap.get(conceptId);
-                 if (existingNode) {
-                    nodesMap.set(conceptId, { ...existingNode, label: fetchedData.label, type: fetchedData.type, originalConcept: fetchedData });
-                 } else { // Should ideally be set already if it was from initialRootConcept
-                    nodesMap.set(conceptId, { id: fetchedData.id, label: fetchedData.label, type: fetchedData.type, depth, originalConcept: fetchedData, isRoot: depth === 0 });
-                 }
-             } else {
-                 // If fetching fails, we might still want to show a node but with limited info
-                 if (!nodesMap.has(conceptId) && currentParentConceptData) {
-                    // Attempt to find it in parent\'s related concepts for basic info
-                    const relatedInfo = getRelatedConcepts(currentParentConceptData).find(rc => rc.id === conceptId);
-                    if(relatedInfo) {
-                         nodesMap.set(conceptId, { id: conceptId, label: relatedInfo.label || conceptId, type: relatedInfo.type, depth, originalConcept: null });
-                    } else {
-                         nodesMap.set(conceptId, { id: conceptId, label: conceptId, depth, originalConcept: null }); // Fallback label
-                    }
-                 }
-                 continue; // Skip trying to get related concepts if fetch failed
-             }
+        if (depth >= 2) {
+          continue;
         }
 
+        const relatedConceptStubs = getRelatedConcepts(currentConceptData);
 
-        if (depth >= 2) continue; // Max depth for fetching related concepts
+        if (relatedConceptStubs.length === 0) {
+            continue;
+        }
 
-        const relatedConcepts = getRelatedConcepts(currentConceptData);
+        const fetchedFullRelatedConcepts = await Promise.all(
+          relatedConceptStubs.filter(stub => stub && stub.id).map(stub => fetchConceptById(stub.id))
+        );
 
-        for (const related of relatedConcepts) {
-          if (related && related.id) {
-            if (!nodesMap.has(related.id)) {
-              nodesMap.set(related.id, { id: related.id, label: related.label, type: related.type, depth: depth + 1, originalConcept: related });
-              if (depth + 1 < 2) { // Queue for next level if not at max depth
-                queue.push({ conceptId: related.id, depth: depth + 1, parentConcept: currentConceptData });
+        for (const fullRelatedConcept of fetchedFullRelatedConcepts) {
+          if (fullRelatedConcept && fullRelatedConcept.id) {
+            if (!nodesMap.has(fullRelatedConcept.id)) {
+              nodesMap.set(fullRelatedConcept.id, {
+                id: fullRelatedConcept.id,
+                label: fullRelatedConcept.label,
+                type: fullRelatedConcept.type,
+                depth: depth + 1,
+                isRoot: false,
+                originalConcept: fullRelatedConcept,
+              });
+              if (depth + 1 < 2) {
+                queue.push({ concept: fullRelatedConcept, depth: depth + 1 });
               }
             }
-            // Check if link already exists to avoid duplicates (important for complex relations)
             const linkExists = links.some(
-                l => (typeof l.source === "string" ? l.source === currentConceptData.id : (l.source as ConceptNode).id === currentConceptData.id) &&
-                     (typeof l.target === "string" ? l.target === related.id : (l.target as ConceptNode).id === related.id)
+              (l) =>
+                (typeof l.source === "string" ? l.source === currentConceptData.id : (l.source as ConceptNode).id === currentConceptData.id) &&
+                (typeof l.target === "string" ? l.target === fullRelatedConcept.id : (l.target as ConceptNode).id === fullRelatedConcept.id)
             );
             if (!linkExists) {
-                links.push({ source: currentConceptData.id, target: related.id });
+              links.push({ source: currentConceptData.id, target: fullRelatedConcept.id });
             }
           }
         }
