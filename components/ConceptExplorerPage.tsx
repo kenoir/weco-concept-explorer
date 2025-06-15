@@ -49,7 +49,7 @@ const ConceptExplorerPage: React.FC = () => {
 
 
     try {
-      const response = await fetch(`/api/wellcome/concepts/${conceptIdToFetch}`);
+      const response = await fetch(`https://api.wellcomecollection.org/catalogue/v2/concepts/${conceptIdToFetch}`);
       if (!response.ok) {
         const errorData = await response.text();
         console.error("API Error Response:", errorData);

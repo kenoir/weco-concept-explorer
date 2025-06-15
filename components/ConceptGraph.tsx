@@ -56,7 +56,7 @@ const ConceptGraph: React.FC<ConceptGraphProps> = ({ rootConcept, onNodeClick, c
   // Function to fetch a single concept (used for populating graph)
   const fetchConceptById = async (id: string): Promise<any | null> => {
     try {
-      const response = await fetch(`/api/wellcome/concepts/${id}`);
+      const response = await fetch(`https://api.wellcomecollection.org/catalogue/v2/concepts/${id}`);
       if (!response.ok) {
         console.warn(`Failed to fetch concept ${id} for graph: ${response.status}`);
         return null;
