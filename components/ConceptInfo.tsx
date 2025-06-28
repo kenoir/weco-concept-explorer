@@ -39,11 +39,17 @@ const styles = {
 };
 
 // Define the expected structure of a concept object
+interface Description {
+  text: string;
+  sourceLabel?: string;
+  sourceUrl?: string;
+}
+
 interface Concept {
   id: string;
   label: string;
   type: string;
-  description?: string;
+  description?: Description | string;
   alternativeLabels?: string[];
 }
 
@@ -62,10 +68,16 @@ const ConceptInfo: React.FC<ConceptInfoProps> = ({ concept }) => {
       </div>
     );
   }
+  const getDescriptionText = (description: Description | string | undefined): string => {
+    if (!description) return "No description available.";
+    if (typeof description === 'string') return description;
+    return description.text || "No description available.";
+  };
+
   return (
     <div style={styles.card}>
       <div style={styles.h2}>{concept.label}</div>
-      <div style={styles.desc}>{concept.description || "No description available."}</div>
+      <div style={styles.desc}>{getDescriptionText(concept.description)}</div>
       <div style={{ marginBottom: 6 }}>
         <span style={styles.label}>ID:</span>
         <span style={styles.badge}>{concept.id}</span>

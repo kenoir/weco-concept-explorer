@@ -27,6 +27,8 @@ jobs:
         run: npm ci
       - name: Build Next.js app
         run: npm run build
+        env:
+          DEPLOY_ENV: GH_PAGES
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
